@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 interface Scorecard {
@@ -16,7 +16,6 @@ interface Scorecard {
 
 export default function ScorecardPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [scorecard, setScorecard] = useState<Scorecard | null>(null);
   const [loading, setLoading] = useState(true);
 
