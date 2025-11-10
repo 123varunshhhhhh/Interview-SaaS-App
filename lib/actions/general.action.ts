@@ -95,23 +95,47 @@ export async function getLatestInterviews(
 ): Promise<Interview[] | null> {
   const { userId, limit = 20 } = params;
 
-  const interviews = await db
-    .collection("interviews")
-    .orderBy("createdAt", "desc")
-    .where("finalized", "==", true)
-    .where("userId", "!=", userId)
-    .limit(limit)
-    .get();
+  if (!userId) {
+    return null;
+  }
 
-  return interviews.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  })) as Interview[];
+  try {
+    // Fetch finalized interviews (no orderBy to avoid index requirement)
+    // We'll filter and sort in memory
+    const interviews = await db
+      .collection("interviews")
+      .where("finalized", "==", true)
+      .limit(100) // Fetch a reasonable batch to filter from
+      .get();
+
+    // Filter out current user's interviews, sort by createdAt, and limit results
+    const filteredAndSorted = interviews.docs
+      .filter((doc) => doc.data().userId !== userId)
+      .sort((a, b) => {
+        const aTime = new Date(a.data().createdAt || 0).getTime();
+        const bTime = new Date(b.data().createdAt || 0).getTime();
+        return bTime - aTime; // Descending order (newest first)
+      })
+      .slice(0, limit)
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Interview[];
+
+    return filteredAndSorted;
+  } catch (error: any) {
+    console.error("Error fetching latest interviews:", error);
+    return [];
+  }
 }
 
 export async function getInterviewsByUserId(
-  userId: string
+  userId: string | undefined
 ): Promise<Interview[] | null> {
+  if (!userId) {
+    return null;
+  }
+
   const interviews = await db
     .collection("interviews")
     .where("userId", "==", userId)
@@ -122,4 +146,75 @@ export async function getInterviewsByUserId(
     id: doc.id,
     ...doc.data(),
   })) as Interview[];
+}
+
+export async function createInterviewPreparation(params: {
+  userId: string;
+  userName: string;
+  transcript: Array<{ role: string; content: string }>;
+  scorecard: {
+    summary: string;
+    jobRole: string;
+    experienceLevel: string;
+    techStack: string;
+    interviewType: string;
+    completenessScore: number;
+    recommendations: string[];
+  };
+}) {
+  const { userId, userName, transcript, scorecard } = params;
+
+  try {
+    const interviewRef = db.collection("interviews").doc();
+
+    // Parse tech stack string into array
+    const techStackArray = scorecard.techStack
+      ? scorecard.techStack
+          .split(/[,;]/)
+          .map((tech) => tech.trim())
+          .filter(Boolean)
+      : [];
+
+    const interview = {
+      userId: userId,
+      userName: userName,
+      type: "preparation",
+      jobRole: scorecard.jobRole || "Not specified",
+      experienceLevel: scorecard.experienceLevel || "Not specified",
+      techStack: techStackArray,
+      interviewType: scorecard.interviewType || "Not specified",
+      completenessScore: scorecard.completenessScore || 0,
+      transcript: transcript,
+      finalized: true,
+      createdAt: new Date().toISOString(),
+    };
+
+    await interviewRef.set(interview);
+
+    // Also save the scorecard as feedback
+    const feedbackRef = db.collection("feedback").doc();
+    const feedback = {
+      interviewId: interviewRef.id,
+      userId: userId,
+      totalScore: scorecard.completenessScore || 0,
+      categoryScores: {
+        "Information Completeness": scorecard.completenessScore || 0,
+      },
+      strengths: scorecard.recommendations || [],
+      areasForImprovement: [],
+      finalAssessment: scorecard.summary || "Interview preparation completed",
+      createdAt: new Date().toISOString(),
+    };
+
+    await feedbackRef.set(feedback);
+
+    return {
+      success: true,
+      interviewId: interviewRef.id,
+      feedbackId: feedbackRef.id,
+    };
+  } catch (error) {
+    console.error("Error saving interview preparation:", error);
+    return { success: false };
+  }
 }

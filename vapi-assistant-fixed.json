@@ -1,0 +1,47 @@
+{
+  "name": "Interview Question Generator - Fixed",
+  "nodes": [
+    {
+      "name": "Interview Question Collector",
+      "type": "conversation",
+      "isStart": true,
+      "prompt": "You are an interview preparation assistant. Your job is to collect these 4 pieces of information:\n\n1. Job role (e.g., \"Frontend Developer\", \"Data Scientist\")\n2. Experience level (Junior, Mid-level, or Senior)\n3. Tech stack/skills (e.g., \"React, Node.js, MongoDB\")\n4. Interview type (Technical, Behavioral, or Mixed)\n\nRULES:\n- Ask for ONE piece of information at a time\n- Keep responses short (1-2 sentences)\n- Be friendly and encouraging\n- After job role, ask about experience level\n- After experience, ask about tech stack\n- After tech stack, ask about interview type\n- Once you have all 4 pieces, say \"Perfect! I have all the information I need. Your personalized interview questions will be generated shortly. Thank you!\" and end the conversation\n\nStart by asking about the job role.",
+      "model": {
+        "model": "gemini-1.5-pro",
+        "provider": "google",
+        "maxTokens": 250,
+        "temperature": 0.3
+      },
+      "voice": {
+        "voiceId": "jennifer",
+        "provider": "11labs"
+      },
+      "transcriber": {
+        "model": "nova-2",
+        "keywords": [],
+        "language": "en",
+        "provider": "deepgram",
+        "endpointing": 2500
+      },
+      "stopSpeakingPlan": {
+        "numWords": 2,
+        "voiceSeconds": 0.3,
+        "backoffSeconds": 1.0
+      },
+      "silenceTimeoutSeconds": 180,
+      "maxDurationSeconds": 1800,
+      "messagePlan": {
+        "firstMessage": "Hi! I'm here to help you prepare for your interview. Let me ask you a few questions to create personalized interview questions for you. What job role are you preparing for?",
+        "idleMessages": [
+          "I'm still here. Take your time to think about your answer.",
+          "No rush! Let me know when you're ready to continue."
+        ],
+        "idleTimeoutSeconds": 15,
+        "idleMessageMaxSpokenCount": 3
+      },
+      "toolIds": []
+    }
+  ],
+  "edges": [],
+  "globalPrompt": ""
+}

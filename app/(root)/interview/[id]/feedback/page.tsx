@@ -64,14 +64,28 @@ const Feedback = async ({ params }: RouteParams) => {
       {/* Interview Breakdown */}
       <div className="flex flex-col gap-4">
         <h2>Breakdown of the Interview:</h2>
-        {feedback?.categoryScores?.map((category, index) => (
-          <div key={index}>
-            <p className="font-bold">
-              {index + 1}. {category.name} ({category.score}/100)
-            </p>
-            <p>{category.comment}</p>
-          </div>
-        ))}
+        {feedback?.categoryScores && typeof feedback.categoryScores === "object"
+          ? Array.isArray(feedback.categoryScores)
+            ? // Handle array format
+              feedback.categoryScores.map((category, index) => (
+                <div key={index}>
+                  <p className="font-bold">
+                    {index + 1}. {category.name} ({category.score}/100)
+                  </p>
+                  <p>{category.comment}</p>
+                </div>
+              ))
+            : // Handle object format
+              Object.entries(feedback.categoryScores).map(
+                ([name, score], index) => (
+                  <div key={index}>
+                    <p className="font-bold">
+                      {index + 1}. {name} ({score}/100)
+                    </p>
+                  </div>
+                )
+              )
+          : null}
       </div>
 
       <div className="flex flex-col gap-3">

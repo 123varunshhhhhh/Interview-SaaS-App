@@ -71,16 +71,45 @@ export async function signIn(params: SignInParams) {
   const { email, idToken } = params;
 
   try {
-    const userRecord = await auth.getUserByEmail(email);
-    if (!userRecord)
+    // Verify the idToken to ensure it's valid
+    // This will throw an error if the token is invalid or user doesn't exist
+    const decodedToken = await auth.verifyIdToken(idToken);
+
+    // Check if user exists in Firestore database
+    const userRecord = await db.collection("users").doc(decodedToken.uid).get();
+    if (!userRecord.exists) {
       return {
         success: false,
-        message: "User does not exist. Create an account.",
+        message: "User account not found. Please sign up first.",
       };
+    }
 
     await setSessionCookie(idToken);
+
+    return {
+      success: true,
+      message: "Signed in successfully.",
+    };
   } catch (error: any) {
-    console.log("");
+    console.error("Error signing in:", error);
+
+    // Handle specific Firebase Auth errors
+    if (
+      error.code === "auth/user-not-found" ||
+      error.code === "auth/invalid-credential"
+    ) {
+      return {
+        success: false,
+        message: "Invalid email or password. Please try again.",
+      };
+    }
+
+    if (error.code === "auth/invalid-id-token") {
+      return {
+        success: false,
+        message: "Authentication failed. Please try again.",
+      };
+    }
 
     return {
       success: false,
@@ -101,26 +130,35 @@ export async function getCurrentUser(): Promise<User | null> {
   const cookieStore = await cookies();
 
   const sessionCookie = cookieStore.get("session")?.value;
+  console.log("Session cookie exists:", !!sessionCookie);
+
   if (!sessionCookie) return null;
 
   try {
     const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
+    console.log("Session verified for user:", decodedClaims.uid);
 
     // get user info from db
     const userRecord = await db
       .collection("users")
       .doc(decodedClaims.uid)
       .get();
-    if (!userRecord.exists) return null;
 
+    if (!userRecord.exists) {
+      console.log("User record not found in database");
+      return null;
+    }
+
+    console.log("User found in database");
     return {
       ...userRecord.data(),
       id: userRecord.id,
     } as User;
   } catch (error) {
-    console.log(error);
+    console.log("Session verification failed:", error);
 
-    // Invalid or expired session
+    // Clear invalid session cookie
+    (await cookieStore).delete("session");
     return null;
   }
 }

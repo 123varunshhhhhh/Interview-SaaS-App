@@ -54,6 +54,7 @@ interface AgentProps {
   feedbackId?: string;
   type: "generate" | "interview";
   questions?: string[];
+  templateId?: string;
 }
 
 interface RouteParams {
@@ -67,7 +68,7 @@ interface GetFeedbackByInterviewIdParams {
 }
 
 interface GetLatestInterviewsParams {
-  userId: string;
+  userId: string | undefined;
   limit?: number;
 }
 

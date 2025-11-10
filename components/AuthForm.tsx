@@ -81,13 +81,19 @@ const AuthForm = ({ type }: { type: FormType }) => {
           return;
         }
 
-        await signIn({
+        const result = await signIn({
           email,
           idToken,
         });
 
+        if (!result?.success) {
+          toast.error(result?.message || "Sign in Failed. Please try again.");
+          return;
+        }
+
         toast.success("Signed in successfully.");
-        router.push("/");
+        // Use window.location for hard navigation to ensure cookies are available
+        window.location.href = "/";
       }
     } catch (error) {
       console.log(error);

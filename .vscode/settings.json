@@ -25,5 +25,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.wordWrap": "on"
+  "editor.wordWrap": "on",
+  "kiroAgent.enableDebugLogs": false,
+  "kiroAgent.agentAutonomy": "Supervised",
+  "typescript.autoClosingTags": false
 }

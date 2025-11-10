@@ -1,0 +1,30 @@
+{
+  "name": "Simple Interview Collector",
+  "nodes": [
+    {
+      "id": "node_1",
+      "name": "Simple Collector",
+      "type": "assistant",
+      "data": {
+        "firstMessage": "Hi! I'll collect some information for your interview preparation. What job role are you preparing for?",
+        "voice": {
+          "provider": "vapi",
+          "voiceId": "default"
+        },
+        "transcriber": {
+          "provider": "deepgram",
+          "model": "nova-2",
+          "language": "en"
+        },
+        "endCallMessage": "Thank you! Your information has been collected.",
+        "maxDurationSeconds": 120,
+        "silenceTimeoutSeconds": 10
+      },
+      "position": {
+        "x": 300,
+        "y": 100
+      }
+    }
+  ],
+  "edges": []
+}

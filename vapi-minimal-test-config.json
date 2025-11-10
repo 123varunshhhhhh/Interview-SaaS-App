@@ -1,0 +1,30 @@
+{
+  "name": "Minimal Test",
+  "nodes": [
+    {
+      "name": "Simple Test",
+      "type": "conversation",
+      "isStart": true,
+      "prompt": "You are a helpful assistant. Say hello and ask how you can help today.",
+      "model": {
+        "model": "gpt-3.5-turbo",
+        "provider": "openai",
+        "maxTokens": 100,
+        "temperature": 0.7
+      },
+      "voice": {
+        "voiceId": "jennifer",
+        "provider": "11labs"
+      },
+      "transcriber": {
+        "model": "nova-2",
+        "provider": "deepgram",
+        "language": "en"
+      },
+      "messagePlan": {
+        "firstMessage": "Hello! How can I help you today?"
+      }
+    }
+  ],
+  "edges": []
+}

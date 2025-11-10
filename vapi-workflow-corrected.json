@@ -1,0 +1,91 @@
+{
+  "name": "Interview Question Generator",
+  "nodes": [
+    {
+      "id": "start",
+      "name": "Start Node",
+      "type": "start",
+      "data": {
+        "label": "Start Node"
+      },
+      "position": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "assistant",
+      "name": "Interview Question Collector",
+      "type": "assistant",
+      "data": {
+        "assistant": {
+          "name": "Interview Question Collector",
+          "firstMessage": "Hi! I'm here to help you prepare for your interview. Let me ask you a few questions to create personalized interview questions for you. What job role are you preparing for?",
+          "model": {
+            "provider": "openai",
+            "model": "gpt-3.5-turbo",
+            "temperature": 0.7,
+            "maxTokens": 150,
+            "messages": [
+              {
+                "role": "system",
+                "content": "You are an interview preparation assistant. Your job is to collect the following information from the user:\n\n1. Job role they're applying for (e.g., \"Frontend Developer\", \"Data Scientist\")\n2. Experience level (Junior, Mid-level, or Senior)\n3. Tech stack/skills (e.g., \"React, Node.js, MongoDB\")\n4. Interview type preference (Technical, Behavioral, or Mixed)\n\nIMPORTANT RULES:\n- Ask for ONE piece of information at a time\n- Keep responses short and conversational (max 2 sentences)\n- Be friendly and encouraging\n- After collecting job role, ask about experience level\n- After experience level, ask about tech stack\n- After tech stack, ask about interview type preference\n- Once you have all 4 pieces of information, say \"Perfect! I have all the information I need. Your personalized interview questions will be generated shortly. Thank you!\" and end the conversation\n\nStart by asking about the job role."
+              }
+            ]
+          },
+          "voice": {
+            "provider": "11labs",
+            "voiceId": "sarah",
+            "stability": 0.5,
+            "similarityBoost": 0.7,
+            "speed": 1.0,
+            "style": 0.3,
+            "useSpeakerBoost": true
+          },
+          "transcriber": {
+            "provider": "deepgram",
+            "model": "nova-2",
+            "language": "en"
+          },
+          "recordingEnabled": true,
+          "endCallMessage": "Thank you for providing the information. Your interview questions will be ready shortly!",
+          "maxDurationSeconds": 300,
+          "silenceTimeoutSeconds": 30,
+          "responseDelaySeconds": 1,
+          "numWordsToInterruptAssistant": 2,
+          "backgroundDenoisingEnabled": true
+        }
+      },
+      "position": {
+        "x": 300,
+        "y": 100
+      }
+    },
+    {
+      "id": "end",
+      "name": "End Node",
+      "type": "end",
+      "data": {
+        "label": "End Node"
+      },
+      "position": {
+        "x": 500,
+        "y": 100
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "start-to-assistant",
+      "from": "start",
+      "to": "assistant",
+      "type": "default"
+    },
+    {
+      "id": "assistant-to-end",
+      "from": "assistant",
+      "to": "end",
+      "type": "default"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "Minimal Test Workflow",
+  "nodes": [
+    {
+      "id": "test_node",
+      "name": "Test Assistant",
+      "type": "assistant",
+      "data": {
+        "firstMessage": "Hello! This is a test. Please say something and I'll repeat it back.",
+        "voice": {
+          "provider": "vapi"
+        },
+        "transcriber": {
+          "provider": "deepgram",
+          "model": "nova-2",
+          "language": "en"
+        },
+        "endCallMessage": "Test completed. Thank you!",
+        "maxDurationSeconds": 60
+      },
+      "position": {
+        "x": 300,
+        "y": 100
+      }
+    }
+  ],
+  "edges": []
+}

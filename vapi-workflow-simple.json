@@ -1,0 +1,39 @@
+{
+  "name": "Interview Question Generator",
+  "nodes": [
+    {
+      "id": "node_1",
+      "name": "Interview Question Collector",
+      "type": "assistant",
+      "data": {
+        "firstMessage": "Hi! I'm here to help you prepare for your interview. Let me ask you a few questions to create personalized interview questions for you. What job role are you preparing for?",
+        "model": {
+          "provider": "openai",
+          "model": "gpt-3.5-turbo",
+          "temperature": 0.7,
+          "maxTokens": 150,
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are an interview preparation assistant. Your job is to collect the following information from the user: 1) Job role 2) Experience level 3) Tech stack 4) Interview type. Ask ONE question at a time. Keep responses short. After collecting all info, say 'Perfect! I have all the information I need. Your personalized interview questions will be generated shortly. Thank you!' and end."
+            }
+          ]
+        },
+        "voice": {
+          "provider": "11labs",
+          "voiceId": "sarah"
+        },
+        "transcriber": {
+          "provider": "deepgram",
+          "model": "nova-2",
+          "language": "en"
+        }
+      },
+      "position": {
+        "x": 300,
+        "y": 100
+      }
+    }
+  ],
+  "edges": []
+}

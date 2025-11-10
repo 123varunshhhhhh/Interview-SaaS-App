@@ -1,25 +1,31 @@
-import Link from "next/link";        //Home page
+import Link from "next/link"; //Home page
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import InterviewCard from "@/components/InterviewCard";
+import InterviewTemplateCard from "@/components/InterviewTemplateCard";
 
 import { getCurrentUser } from "@/lib/actions/auth.action";
 import {
   getInterviewsByUserId,
   getLatestInterviews,
 } from "@/lib/actions/general.action";
+import { interviewTemplates } from "@/constants/interview-templates";
 
 async function Home() {
   const user = await getCurrentUser();
 
+  if (!user?.id) {
+    return null;
+  }
+
   const [userInterviews, allInterview] = await Promise.all([
-    getInterviewsByUserId(user?.id!),
-    getLatestInterviews({ userId: user?.id! }),
+    getInterviewsByUserId(user.id),
+    getLatestInterviews({ userId: user.id }),
   ]);
 
-  const hasPastInterviews = userInterviews?.length! > 0;
-  const hasUpcomingInterviews = allInterview?.length! > 0;
+  const hasPastInterviews = (userInterviews?.length ?? 0) > 0;
+  const hasUpcomingInterviews = (allInterview?.length ?? 0) > 0;
 
   return (
     <>
@@ -30,9 +36,11 @@ async function Home() {
             Practice real interview questions & get instant feedback
           </p>
 
-          <Button asChild className="btn-primary max-sm:w-full">
-            <Link href="/interview">Start an Interview</Link>
-          </Button>
+          <div className="flex gap-4 max-sm:flex-col">
+            <Button asChild className="btn-primary">
+              <Link href="/interview">Start an Interview</Link>
+            </Button>
+          </div>
         </div>
 
         <Image
@@ -52,7 +60,7 @@ async function Home() {
             userInterviews?.map((interview) => (
               <InterviewCard
                 key={interview.id}
-                userId={user?.id}
+                userId={user.id}
                 interviewId={interview.id}
                 role={interview.role}
                 type={interview.type}
@@ -67,14 +75,33 @@ async function Home() {
       </section>
 
       <section className="flex flex-col gap-6 mt-8">
-        <h2>Take Interviews</h2>
+        <div className="flex items-center justify-between">
+          <h2>Practice Interviews - Start Instantly</h2>
+          <p className="text-sm text-gray-600">
+            Click any interview to start practicing immediately
+          </p>
+        </div>
+
+        <div className="interviews-section">
+          {interviewTemplates.map((template) => (
+            <InterviewTemplateCard
+              key={template.id}
+              template={template}
+              userId={user.id}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-6 mt-8">
+        <h2>Your Custom Interviews</h2>
 
         <div className="interviews-section">
           {hasUpcomingInterviews ? (
             allInterview?.map((interview) => (
               <InterviewCard
                 key={interview.id}
-                userId={user?.id}
+                userId={user.id}
                 interviewId={interview.id}
                 role={interview.role}
                 type={interview.type}
@@ -83,7 +110,7 @@ async function Home() {
               />
             ))
           ) : (
-            <p>There are no interviews available</p>
+            <p>No custom interviews yet. Create one above!</p>
           )}
         </div>
       </section>

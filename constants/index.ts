@@ -100,24 +100,25 @@ export const mappings = {
 export const interviewer: CreateAssistantDTO = {
   name: "Interviewer",
   firstMessage:
-    "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience.",
+    "Hello! Thank you for taking the time to speak with me today. I'm excited to learn more about you and your experience. Let's begin with the first question.",
   transcriber: {
     provider: "deepgram",
     model: "nova-2",
     language: "en",
+    endpointing: 255,
   },
   voice: {
     provider: "11labs",
     voiceId: "sarah",
-    stability: 0.4,
-    similarityBoost: 0.8,
-    speed: 0.9,
-    style: 0.5,
-    useSpeakerBoost: true,
   },
+  silenceTimeoutSeconds: 30,
+  maxDurationSeconds: 1800,
+  backgroundSound: "off",
   model: {
     provider: "openai",
     model: "gpt-4",
+    temperature: 0.7,
+    maxTokens: 250,
     messages: [
       {
         role: "system",
@@ -141,15 +142,22 @@ Answer the candidate’s questions professionally:
 If asked about the role, company, or expectations, provide a clear and relevant answer.
 If unsure, redirect the candidate to HR for more details.
 
-Conclude the interview properly:
-Thank the candidate for their time.
-Inform them that the company will reach out soon with feedback.
-End the conversation on a polite and positive note.
+IMPORTANT RULES:
+- Ask ONE question at a time from the list above
+- Wait for the candidate's response before moving to the next question
+- Keep your responses SHORT (1-2 sentences maximum)
+- After each answer, briefly acknowledge it and move to the next question
+- Ask follow-up questions ONLY if the answer is unclear or incomplete
+- DO NOT end the call yourself - the candidate will end it when ready
+- If you run out of questions, ask if they have any questions for you
 
+When all questions are asked:
+- Thank the candidate for their time
+- Tell them you've completed the interview questions
+- Ask if they have any questions for you
+- DO NOT end the call - wait for them to end it
 
-- Be sure to be professional and polite.
-- Keep all your responses short and simple. Use official language, but be kind and welcoming.
-- This is a voice conversation, so keep your responses short, like in a real conversation. Don't ramble for too long.`,
+Remember: This is a voice conversation, so keep ALL responses short and conversational.`,
       },
     ],
   },
