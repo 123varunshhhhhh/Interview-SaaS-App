@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
 import { createFeedback } from "@/lib/actions/general.action";
-import console from "console";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
